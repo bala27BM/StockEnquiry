@@ -1,0 +1,78 @@
+
+<div class="container">
+  <h1>STOCK ENQUIRY</h1>
+
+  <form [formGroup]="stockForm" (ngSubmit)="searchStock()">
+    <div class="search-row">
+      <label for="partNumber">Part Number:</label>
+
+      <input
+        id="partNumber"
+        type="text"
+        formControlName="partNumber"
+        placeholder="Enter part number"
+      />
+
+      <button type="submit" [disabled]="loading">
+        Search
+      </button>
+
+      <button type="button" class="reset" (click)="resetSearch()">
+        Reset
+      </button>
+    </div>
+
+    <p class="validation"
+       *ngIf="stockForm.controls.partNumber.touched &&
+              stockForm.controls.partNumber.hasError('required')">
+      Please enter a part number.
+    </p>
+  </form>
+
+  <p *ngIf="loading" class="loading">Searching...</p>
+
+  <p *ngIf="errorMessage" class="error">
+    {{ errorMessage }}
+  </p>
+
+  <div *ngIf="stock as result">
+    <ng-container *ngIf="result.stockDetails.length > 0; else noStock">
+      <section class="summary">
+        <p><strong>Part Number:</strong> {{ result.partNumber }}</p>
+        <p><strong>Description:</strong> {{ result.description }}</p>
+        <p><strong>Total Available:</strong> {{ result.totalAvailable }}</p>
+        <p><strong>Total Reserved:</strong> {{ result.totalReserved }}</p>
+      </section>
+
+      <h2>Stock Details</h2>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Location</th>
+            <th>Location Type</th>
+            <th>Available</th>
+            <th>Reserved</th>
+            <th>UOM</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let item of result.stockDetails">
+            <td>{{ item.location }}</td>
+            <td>{{ item.locationType }}</td>
+            <td>{{ item.availableQty }}</td>
+            <td>{{ item.reservedQty }}</td>
+            <td>{{ item.uom }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </ng-container>
+
+    <ng-template #noStock>
+      <p class="empty">
+        No stock information found for {{ result.partNumber }}.
+      </p>
+    </ng-template>
+  </div>
+</div>
